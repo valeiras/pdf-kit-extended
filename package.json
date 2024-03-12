@@ -1,0 +1,15 @@
+{
+  "name": "pdf-kit-extended",
+  "version": "0.1.0",
+  "description": "Some additional features built on top of PdfKit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Reverter Valeiras",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
