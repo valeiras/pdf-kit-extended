@@ -260,6 +260,7 @@ class PdfKitExtended extends PDFDocument {
       align,
       width: textWidth,
     });
+    this.y = y + rectangleHeight;
   }
 
   table(tableRows: TableRow[], tableConfig: TableConfig = {}): void {
