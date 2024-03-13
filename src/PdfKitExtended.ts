@@ -1,7 +1,5 @@
 import sizeOf from "buffer-image-size";
 import PDFDocument from "pdfkit";
-import path from "path";
-import { downloadedFonts } from "./availableFonts.ts";
 import { scaleImageToMaxWidth } from "./utils.ts";
 import {
   AlignMaker,
@@ -29,7 +27,7 @@ class PdfKitExtended extends PDFDocument {
     {
       footerImageConfig,
       headerImageConfig,
-    }: { footerImageConfig?: FooterImageConfig; headerImageConfig?: HeaderImageConfig }
+    }: { footerImageConfig?: FooterImageConfig; headerImageConfig?: HeaderImageConfig } = {}
   ) {
     super({ ...docSettings, autoFirstPage: false });
 
@@ -129,14 +127,6 @@ class PdfKitExtended extends PDFDocument {
     this.fontSize(fontSize);
     this.y = currY;
     if (!continued) this.moveDown();
-  }
-
-  setupFont(requestedFont: string, { defaultFont = "Arial" }: { defaultFont?: string } = {}): void {
-    const { fontFile } = downloadedFonts.find(({ fontName }) => fontName === requestedFont) || {
-      fontFile: defaultFont,
-    };
-    const fontPath: PDFKit.Mixins.PDFFontSource = path.join(__dirname, "..", "fonts", fontFile);
-    this.registerFont(requestedFont, fontPath);
   }
 
   hr({
