@@ -1,1 +1,3 @@
-export { default as PdfKitExtended } from "./PdfKitExtended";
+export { default as PdfKitExtended } from "./PdfKitExtended.ts";
+// import { PDFDocument } from "pdfkit";
+export { default as PDFKit } from "pdfkit";

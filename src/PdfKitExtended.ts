@@ -2,7 +2,7 @@ import sizeOf from "buffer-image-size";
 import PDFDocument from "pdfkit";
 import path from "path";
 import { downloadedFonts } from "./availableFonts.ts";
-import { scaleImageToMaxWidth } from "./utils.js";
+import { scaleImageToMaxWidth } from "./utils.ts";
 import {
   AlignMaker,
   AlignedImageConfig,
@@ -19,7 +19,7 @@ import {
   TableParameters,
   TableRow,
 } from "./types.ts";
-const __dirname = import.meta.dirname;
+// const __dirname = import.meta.dirname;
 
 class PdfKitExtended extends PDFDocument {
   #defaultColors: ColorSettings;
@@ -29,7 +29,7 @@ class PdfKitExtended extends PDFDocument {
     {
       footerImageConfig,
       headerImageConfig,
-    }: { footerImageConfig: FooterImageConfig; headerImageConfig: HeaderImageConfig }
+    }: { footerImageConfig?: FooterImageConfig; headerImageConfig?: HeaderImageConfig }
   ) {
     super({ ...docSettings, autoFirstPage: false });
 
