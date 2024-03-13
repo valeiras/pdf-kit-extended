@@ -15,7 +15,9 @@ export type FooterImageConfig = HeaderImageConfig & {
 };
 
 export type ImageConfig = {
-  width?: number;
+  imageWidth?: number;
+  containerWidth?: number;
+  x?: number;
   y?: number;
   forceCursorDisplacement?: boolean;
   plotFrame?: boolean;

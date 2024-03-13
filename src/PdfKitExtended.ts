@@ -42,11 +42,11 @@ class PdfKitExtended extends PDFDocument {
       this.rect(0, 0, this.page.width, this.page.height).fill(this.#defaultColors.backgroundColor);
       this.useDefaultColors();
       if (headerImageConfig) {
-        this.centeredImage(headerImageConfig.image, { width: headerImageConfig.width, y: 0 });
+        this.centeredImage(headerImageConfig.image, { imageWidth: headerImageConfig.width, y: 0 });
       }
       if (footerImageConfig) {
         this.centeredImage(footerImageConfig.image, {
-          width: footerImageConfig.width,
+          imageWidth: footerImageConfig.width,
           y: this.page.height - footerImageConfig.height,
         });
       }
@@ -87,12 +87,20 @@ class PdfKitExtended extends PDFDocument {
     return this.page.height - this.page.margins.bottom;
   }
 
-  getXRightAligned(width: number): number {
-    return this.page.width - this.page.margins.right - width;
+  getXRightAligned({
+    x,
+    imageWidth,
+    containerWidth,
+  }: {
+    x: number;
+    imageWidth: number;
+    containerWidth: number;
+  }): number {
+    return this.x + containerWidth - imageWidth;
   }
 
-  getXCentered(width: number): number {
-    return this.page.margins.left + (this.getUsableWidth() - width) / 2;
+  getXCentered({ x, imageWidth, containerWidth }: { x: number; imageWidth: number; containerWidth: number }): number {
+    return x + (containerWidth - imageWidth) / 2;
   }
 
   getPageCount(): number {
@@ -162,7 +170,9 @@ class PdfKitExtended extends PDFDocument {
   alignedImage(
     imageBuffer: Buffer,
     {
-      width = sizeOf(imageBuffer).width,
+      imageWidth = sizeOf(imageBuffer).width,
+      containerWidth = this.getUsableWidth(),
+      x = this.x,
       y = this.y,
       forceCursorDisplacement = false,
       plotFrame = false,
@@ -170,37 +180,37 @@ class PdfKitExtended extends PDFDocument {
       fitOptions,
     }: AlignedImageConfig
   ): void {
-    let x;
+    let xImage;
     switch (align) {
       case "left":
-        x = this.x;
+        xImage = x;
         break;
       case "center":
-        x = this.getXCentered(width);
+        xImage = this.getXCentered({ x, imageWidth, containerWidth });
         break;
       case "right":
-        x = this.getXRightAligned(width);
+        xImage = this.getXRightAligned({ x, imageWidth, containerWidth });
         break;
       default:
-        x = this.x;
+        xImage = x;
         break;
     }
 
     if (forceCursorDisplacement) {
-      this.x = x;
+      this.x = xImage;
       this.y = y;
       if (fitOptions) this.image(imageBuffer, fitOptions);
-      else this.image(imageBuffer, { width });
+      else this.image(imageBuffer, { width: imageWidth });
     } else {
-      if (fitOptions) this.image(imageBuffer, x, y, fitOptions);
-      else this.image(imageBuffer, x, y, { width });
+      if (fitOptions) this.image(imageBuffer, xImage, y, fitOptions);
+      else this.image(imageBuffer, xImage, y, { width: imageWidth });
     }
     if (plotFrame) {
       if (fitOptions) {
-        this.rect(x, y, fitOptions.fit[0], fitOptions.fit[1]).stroke();
+        this.rect(xImage, y, fitOptions.fit[0], fitOptions.fit[1]).stroke();
       } else {
-        const height = this.getImageHeight(imageBuffer, width);
-        this.rect(x, y, width, height).stroke();
+        const height = this.getImageHeight(imageBuffer, imageWidth);
+        this.rect(xImage, y, imageWidth, height).stroke();
       }
     }
   }
@@ -253,7 +263,7 @@ class PdfKitExtended extends PDFDocument {
   }
 
   table(tableRows: TableRow[], tableConfig: TableConfig = {}): void {
-    const tableParameters = this.prepareTableParameters({ tableConfig, tableRows });
+    const tableParameters = this.#prepareTableParameters({ tableConfig, tableRows });
 
     let {
       startX,
@@ -368,7 +378,7 @@ class PdfKitExtended extends PDFDocument {
 
       this.fillColor(cellTextColor);
 
-      const imageHeight = cellImage ? this.getImageHeight(cellImage, columnTextWidths[jj]) : 0;
+      const { imageHeight } = cellImage ? scaleImageToMaxWidth(cellImage, columnTextWidths[jj]) : { imageHeight: 0 };
       const textHeight = cellText ? this.heightOfString(cellText, { width: columnTextWidths[jj] }) : 0;
 
       if (cellImage) {
@@ -381,7 +391,7 @@ class PdfKitExtended extends PDFDocument {
         });
 
         this.image(cellImage, columnXs[jj] + horPadding, yPos, {
-          width: columnTextWidths[jj],
+          fit: [columnTextWidths[jj], rowHeights[rowIdx]],
           ...cellImageOptions,
         });
       }
@@ -442,7 +452,7 @@ class PdfKitExtended extends PDFDocument {
   }
 
   getTableHeight(tableRows: TableRow[], tableConfig: TableConfig = {}): number {
-    const tableParameters: TableParameters = this.prepareTableParameters({ tableConfig, tableRows });
+    const tableParameters: TableParameters = this.#prepareTableParameters({ tableConfig, tableRows });
     return tableParameters.totalHeight;
   }
 
@@ -480,27 +490,27 @@ class PdfKitExtended extends PDFDocument {
     return yPos;
   }
 
-  alignTwoColumnsToExtremes(): AlignMaker {
+  static alignTwoColumnsToExtremes(): AlignMaker {
     return (_rowIdx: number, cellIdx: number) => {
       return cellIdx % 2 === 0 ? "left" : "right";
     };
   }
 
-  makeEvenColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
+  static makeEvenColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
       if (cellIdx % 2 === 0) return { cellFontFamily: highlightedFont };
       else return { cellFontFamily: mainFont };
     };
   }
 
-  makeOddColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
+  static makeOddColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
       if (cellIdx % 2 === 0) return { cellFontFamily: mainFont };
       else return { cellFontFamily: highlightedFont };
     };
   }
 
-  alternateMainColors(
+  static alternateMainColors(
     fillColor1: PDFKit.Mixins.ColorValue,
     fillColor2: PDFKit.Mixins.ColorValue,
     commonConfig: RowConfig = {}
@@ -513,7 +523,7 @@ class PdfKitExtended extends PDFDocument {
     };
   }
 
-  highlightHeaders(
+  static highlightHeaders(
     {
       headersFill,
       headersFontFamily,
@@ -537,7 +547,7 @@ class PdfKitExtended extends PDFDocument {
     };
   }
 
-  prepareTableParameters({ tableConfig, tableRows }: { tableConfig: TableConfig; tableRows: TableRow[] }) {
+  #prepareTableParameters({ tableConfig, tableRows }: { tableConfig: TableConfig; tableRows: TableRow[] }) {
     const tp: TableParameters = {
       startX: tableConfig.startX ?? this.x,
       startY: tableConfig.startY ?? this.y,
