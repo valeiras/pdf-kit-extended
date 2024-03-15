@@ -21,7 +21,7 @@ export type ImageConfig = {
   y?: number;
   forceCursorDisplacement?: boolean;
   plotFrame?: boolean;
-  fitOptions?: { fit: [number, number] };
+  imageOptions?: PDFKit.Mixins.ImageOption;
 };
 
 export type AlignedImageConfig = ImageConfig & {

@@ -20,7 +20,7 @@ import {
 // const __dirname = import.meta.dirname;
 
 class PdfKitExtended extends PDFDocument {
-  #defaultColors: ColorSettings;
+  private defaultColors: ColorSettings;
 
   constructor(
     docSettings?: PDFKit.PDFDocumentOptions,
@@ -31,7 +31,7 @@ class PdfKitExtended extends PDFDocument {
   ) {
     super({ ...docSettings, autoFirstPage: false });
 
-    this.#defaultColors = {
+    this.defaultColors = {
       textColor: "#000000",
       strokeColor: "#cdcdce",
       backgroundColor: "#ffffff",
@@ -39,7 +39,7 @@ class PdfKitExtended extends PDFDocument {
     };
 
     this.on("pageAdded", () => {
-      this.rect(0, 0, this.page.width, this.page.height).fill(this.#defaultColors.backgroundColor);
+      this.rect(0, 0, this.page.width, this.page.height).fill(this.defaultColors.backgroundColor);
       this.useDefaultColors();
       if (headerImageConfig) {
         this.centeredImage(headerImageConfig.image, { imageWidth: headerImageConfig.width, y: 0 });
@@ -54,13 +54,13 @@ class PdfKitExtended extends PDFDocument {
   }
 
   useDefaultColors(): void {
-    this.fillColor(this.#defaultColors.textColor);
-    this.strokeColor(this.#defaultColors.strokeColor);
+    this.fillColor(this.defaultColors.textColor);
+    this.strokeColor(this.defaultColors.strokeColor);
   }
 
   setDefaultColors(colors: Partial<ColorSettings>): void {
-    const { textColor, strokeColor, backgroundColor, fillColor } = { ...this.#defaultColors, ...colors };
-    this.#defaultColors = { textColor, strokeColor, backgroundColor, fillColor };
+    const { textColor, strokeColor, backgroundColor, fillColor } = { ...this.defaultColors, ...colors };
+    this.defaultColors = { textColor, strokeColor, backgroundColor, fillColor };
   }
 
   getRemainingHeight(): number {
@@ -177,7 +177,7 @@ class PdfKitExtended extends PDFDocument {
       forceCursorDisplacement = false,
       plotFrame = false,
       align,
-      fitOptions,
+      imageOptions,
     }: AlignedImageConfig
   ): void {
     let xImage;
@@ -199,15 +199,15 @@ class PdfKitExtended extends PDFDocument {
     if (forceCursorDisplacement) {
       this.x = xImage;
       this.y = y;
-      if (fitOptions) this.image(imageBuffer, fitOptions);
+      if (imageOptions) this.image(imageBuffer, imageOptions);
       else this.image(imageBuffer, { width: imageWidth });
     } else {
-      if (fitOptions) this.image(imageBuffer, xImage, y, fitOptions);
+      if (imageOptions) this.image(imageBuffer, xImage, y, imageOptions);
       else this.image(imageBuffer, xImage, y, { width: imageWidth });
     }
     if (plotFrame) {
-      if (fitOptions) {
-        this.rect(xImage, y, fitOptions.fit[0], fitOptions.fit[1]).stroke();
+      if (imageOptions?.fit) {
+        this.rect(xImage, y, imageOptions.fit[0], imageOptions.fit[1]).stroke();
       } else {
         const height = this.getImageHeight(imageBuffer, imageWidth);
         this.rect(xImage, y, imageWidth, height).stroke();
@@ -225,9 +225,9 @@ class PdfKitExtended extends PDFDocument {
       padding = { top: paddingAll, left: paddingAll, bottom: paddingAll, right: paddingAll },
       cornerRadius = 0,
       fillOpacity = 1,
-      strokeColor = this.#defaultColors.strokeColor,
-      fillColor = this.#defaultColors.fillColor,
-      textColor = this.#defaultColors.textColor,
+      strokeColor = this.defaultColors.strokeColor,
+      fillColor = this.defaultColors.fillColor,
+      textColor = this.defaultColors.textColor,
       lineWidth = 1,
       align = "justify",
     }: RectangleConfig = {}
@@ -561,7 +561,7 @@ class PdfKitExtended extends PDFDocument {
       minRowsBottomOfPage: tableConfig.minRowsBottomOfPage || 3, // If there is space for less than this number, we start a new page
       hasHeaderOnTopOfNewPage: tableConfig.hasHeaderOnTopOfNewPage ?? true,
       hasNewPages: tableConfig.hasNewPages ?? true,
-      textColor: tableConfig.textColor || this.#defaultColors.textColor,
+      textColor: tableConfig.textColor || this.defaultColors.textColor,
       hasHorizontalLines: tableConfig.hasHorizontalLines ?? true,
       makeAlign: tableConfig.makeAlign || (() => "center"),
       prepareRow:
