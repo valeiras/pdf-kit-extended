@@ -497,14 +497,14 @@ class PdfKitExtended extends PDFDocument {
     };
   }
 
-  static makeEvenColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
+  static makeEvenColumnsBold(mainFont: string | undefined, highlightedFont: string | undefined): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
       if (cellIdx % 2 === 0) return { cellFontFamily: highlightedFont };
       else return { cellFontFamily: mainFont };
     };
   }
 
-  static makeOddColumnsBold(mainFont: string, highlightedFont: string): CellPreparer {
+  static makeOddColumnsBold(mainFont: string | undefined, highlightedFont: string | undefined): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
       if (cellIdx % 2 === 0) return { cellFontFamily: mainFont };
       else return { cellFontFamily: highlightedFont };
@@ -512,8 +512,8 @@ class PdfKitExtended extends PDFDocument {
   }
 
   static alternateMainColors(
-    fillColor1: PDFKit.Mixins.ColorValue,
-    fillColor2: PDFKit.Mixins.ColorValue,
+    fillColor1: PDFKit.Mixins.ColorValue | undefined,
+    fillColor2: PDFKit.Mixins.ColorValue | undefined,
     commonConfig: RowConfig = {}
   ): RowPreparer {
     return (rowIdx: number) => {
@@ -531,10 +531,10 @@ class PdfKitExtended extends PDFDocument {
       rowFill,
       rowFontFamily,
     }: {
-      headersFill: PDFKit.Mixins.ColorValue;
-      headersFontFamily: string;
-      rowFill: PDFKit.Mixins.ColorValue;
-      rowFontFamily: string;
+      headersFill: PDFKit.Mixins.ColorValue | undefined;
+      headersFontFamily: string | undefined;
+      rowFill: PDFKit.Mixins.ColorValue | undefined;
+      rowFontFamily: string | undefined;
     },
     commonConfig: RowConfig = {}
   ): RowPreparer {
