@@ -58,7 +58,7 @@ class PdfKitExtended extends PDFDocument {
     this.strokeColor(this.#defaultColors.strokeColor);
   }
 
-  setDefaultColors(colors: ColorSettings): void {
+  setDefaultColors(colors: Partial<ColorSettings>): void {
     const { textColor, strokeColor, backgroundColor, fillColor } = { ...this.#defaultColors, ...colors };
     this.#defaultColors = { textColor, strokeColor, backgroundColor, fillColor };
   }

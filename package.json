@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsup",
     "clean": "if exist dist ( rd /S /Q dist)",
-    "updateLink": "npm run clean && tsup && npm rm my-lib -g && npm link",
+    "updateLink": "npm run clean && tsup && npm rm pdf-kit-extended -g && npm link",
     "test": "jest"
   },
   "author": "David Reverter Valeiras",
