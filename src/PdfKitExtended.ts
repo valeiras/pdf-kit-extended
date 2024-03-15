@@ -23,7 +23,7 @@ class PdfKitExtended extends PDFDocument {
   #defaultColors: ColorSettings;
 
   constructor(
-    docSettings: PDFKit.PDFDocumentOptions,
+    docSettings?: PDFKit.PDFDocumentOptions,
     {
       footerImageConfig,
       headerImageConfig,
