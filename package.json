@@ -1,6 +1,7 @@
 {
   "name": "pdf-kit-extended",
   "version": "0.1.10",
+  "type": "module",
   "description": "Some additional features built on top of PdfKit",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

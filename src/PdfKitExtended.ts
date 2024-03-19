@@ -30,7 +30,7 @@ class PdfKitExtended extends PDFDocument {
       headerImageConfig,
     }: { footerImageConfig?: FooterImageConfig; headerImageConfig?: HeaderImageConfig } = {}
   ) {
-    super({ ...docSettings, autoFirstPage: false });
+    super({ ...docSettings });
 
     this.defaultColors = {
       textColor: "#000000",
@@ -262,6 +262,7 @@ class PdfKitExtended extends PDFDocument {
       width: textWidth,
     });
     this.y = y + rectangleHeight;
+    this.x = x;
   }
 
   table(tableRows: TableRow[], tableConfig: TableConfig = {}): void {
@@ -527,16 +528,16 @@ class PdfKitExtended extends PDFDocument {
 
   static highlightHeaders(
     {
-      headersFill,
-      headersFontFamily,
-      rowFill,
-      rowFontFamily,
+      headersFill = "grey",
+      headersFontFamily = "Helvetica-Bold",
+      rowFill = "white",
+      rowFontFamily = "Helvetica",
     }: {
-      headersFill: PDFKit.Mixins.ColorValue | undefined;
-      headersFontFamily: string | undefined;
-      rowFill: PDFKit.Mixins.ColorValue | undefined;
-      rowFontFamily: string | undefined;
-    },
+      headersFill?: PDFKit.Mixins.ColorValue;
+      headersFontFamily?: string;
+      rowFill?: PDFKit.Mixins.ColorValue;
+      rowFontFamily?: string;
+    } = {},
     commonConfig: RowConfig = {}
   ): RowPreparer {
     return (rowIdx) => {
