@@ -19,6 +19,7 @@ import {
 } from "./types.ts";
 // const __dirname = import.meta.dirname;
 
+const SAFETY_MARGIN = 2;
 class PdfKitExtended extends PDFDocument {
   private defaultColors: ColorSettings;
 
@@ -232,7 +233,7 @@ class PdfKitExtended extends PDFDocument {
       align = "justify",
     }: RectangleConfig = {}
   ): void {
-    const rectangleWidth = width || this.widthOfString(text) + padding.left + padding.right;
+    const rectangleWidth = width || this.widthOfString(text) + padding.left + padding.right + SAFETY_MARGIN;
 
     const textWidth = rectangleWidth - padding.left - padding.right;
     const textHeight = this.heightOfString(text, {
