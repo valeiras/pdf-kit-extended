@@ -4,6 +4,7 @@ import { scaleImageToMaxWidth } from "./utils.ts";
 import {
   AlignMaker,
   AlignedImageConfig,
+  CellConfig,
   CellPreparer,
   ColorSettings,
   FooterImageConfig,
@@ -132,7 +133,7 @@ class PdfKitExtended extends PDFDocument {
 
   superscript(text: string, fontSize: number, { continued = false }: { continued?: boolean } = {}): void {
     const currY = this.y;
-    this.fontSize(fontSize / 2).text(text);
+    this.fontSize(Math.round(fontSize / 2)).text(text, { continued });
     this.fontSize(fontSize);
     this.y = currY;
     if (!continued) this.moveDown();
@@ -499,17 +500,25 @@ class PdfKitExtended extends PDFDocument {
     };
   }
 
-  static makeEvenColumnsBold(mainFont: string | undefined, highlightedFont: string | undefined): CellPreparer {
+  static makeEvenColumnsBold(
+    mainFont: string | undefined,
+    highlightedFont: string | undefined,
+    cellConfig?: CellConfig
+  ): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
-      if (cellIdx % 2 === 0) return { cellFontFamily: highlightedFont };
-      else return { cellFontFamily: mainFont };
+      if (cellIdx % 2 === 0) return { ...cellConfig, cellFontFamily: highlightedFont };
+      else return { ...cellConfig, cellFontFamily: mainFont };
     };
   }
 
-  static makeOddColumnsBold(mainFont: string | undefined, highlightedFont: string | undefined): CellPreparer {
+  static makeOddColumnsBold(
+    mainFont: string | undefined,
+    highlightedFont: string | undefined,
+    cellConfig?: CellConfig
+  ): CellPreparer {
     return (_rowIdx: number, cellIdx: number) => {
-      if (cellIdx % 2 === 0) return { cellFontFamily: mainFont };
-      else return { cellFontFamily: highlightedFont };
+      if (cellIdx % 2 === 0) return { ...cellConfig, cellFontFamily: mainFont };
+      else return { ...cellConfig, cellFontFamily: highlightedFont };
     };
   }
 

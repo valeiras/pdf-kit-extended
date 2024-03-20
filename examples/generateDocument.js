@@ -1,9 +1,12 @@
 import { PdfKitExtended } from "./../dist/index.js";
 import fs from "fs";
 
+const fontSize = 10;
+
 // Create a document
 const doc = new PdfKitExtended();
 doc.pipe(fs.createWriteStream("output.pdf"));
+doc.fontSize(fontSize);
 
 doc.textWithBoundingRectangle("Text inside the rectangle", {
   padding: { top: 5, bottom: 2, left: 3, right: 3 },
@@ -18,11 +21,16 @@ doc.textWithBoundingRectangle("Text inside the rectangle", {
 doc.fillColor("#000000");
 doc.moveDown();
 
+doc.text("This is a", { continued: true });
+doc.superscript("superscript", fontSize, { continued: true });
+doc.text(", even if the font family does not support it");
+doc.moveDown();
+
 doc.text("Horizontal rule:");
 doc.hr({ strokeColor: "#555555" });
 doc.moveDown();
 
-const tableRows = [
+const table1Rows = [
   [
     { cellText: "Food", cellTextOptions: { align: "left" } },
     { cellText: "Note", cellTextOptions: { align: "center" } },
@@ -44,7 +52,7 @@ doc.moveDown();
 doc.text("Table: ");
 doc.moveDown(0.5);
 
-doc.table(tableRows, {
+doc.table(table1Rows, {
   prepareRow: PdfKitExtended.highlightHeaders({
     headersFill: "#d5d5d5",
     headersFontFamily: "Times-Bold",
@@ -53,4 +61,26 @@ doc.table(tableRows, {
   }),
 });
 
+doc.moveDown(2);
+
+doc.font("Helvetica");
+const table2Rows = [
+  [{ cellText: "Name" }, { cellText: "Mars" }],
+  [{ cellText: "Aphelion" }, { cellText: "249261000 km" }],
+  [{ cellText: "Perihelion" }, { cellText: "206650000 km" }],
+  [{ cellText: "Eccentricity" }, { cellText: "0.0934" }],
+];
+doc.text("Another table with planet information: ");
+doc.moveDown();
+doc.table(table2Rows, {
+  width: (2 * doc.getUsableWidth()) / 3,
+  predefinedWidthFractions: [0.4, 0.6],
+  makeAlign: PdfKitExtended.alignTwoColumnsToExtremes(),
+  prepareCell: PdfKitExtended.makeEvenColumnsBold("Courier", "Courier-Bold", {
+    cellHasStroke: true,
+    cellStrokeColor: "aquamarine",
+  }),
+  prepareRow: PdfKitExtended.alternateMainColors("#d2d3d5", "#f3f3f3"),
+  hasHorizontalLines: false,
+});
 doc.end();

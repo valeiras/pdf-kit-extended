@@ -5,7 +5,7 @@ Some additional functions, built on top of the amazing Javascript Pdf generation
 ## Usage
 
 ### Installation:
-  
+
 ```sh
 npm install pdf-kit-extended
 ```
@@ -15,18 +15,18 @@ npm install pdf-kit-extended
 Same as PdfKit:
 
 ```js
-import { PdfKitExtended } from "./../dist/index.js";
+import { PdfKitExtended } from "pdf-kit-extended";
 import fs from "fs";
 
 // Create a document
 const doc = new PdfKitExtended();
 doc.pipe(fs.createWriteStream("output.pdf"));
-doc.end()
+doc.end();
 ```
 
 ### Additional functions:
 
-* textWithBoundingRectangle
+- textWithBoundingRectangle
 
 ```js
 doc.textWithBoundingRectangle("Text inside the rectangle", {
@@ -40,14 +40,15 @@ doc.textWithBoundingRectangle("Text inside the rectangle", {
 });
 ```
 
-* Horizontal rule
+- Horizontal rule
 
 ```js
 doc.text("Horizontal rule:");
 doc.hr({ strokeColor: "#555555" });
 ```
 
-* Table
+- Table
+
 ```js
 const tableRows = [
   [
@@ -74,5 +75,36 @@ doc.table(tableRows, {
     rowFill: "#f3f3f3",
     rowFontFamily: "Times-Roman",
   }),
+});
+```
+
+The library includes a series of static helper functions, designed to ease the personalization of the table appearance:
+
+- alignTwoColumnsToExtremes()
+- makeEvenColumnsBold()
+- makeOddColumnsBold()
+- alternateMainColors()
+- highlightHeaders()
+
+Example:
+
+```js
+const table2Rows = [
+  [{ cellText: "Name" }, { cellText: "Mars" }],
+  [{ cellText: "Aphelion" }, { cellText: "249261000 km" }],
+  [{ cellText: "Perihelion" }, { cellText: "206650000 km" }],
+  [{ cellText: "Eccentricity" }, { cellText: "0.0934" }],
+];
+
+doc.table(table2Rows, {
+  width: (2 * doc.getUsableWidth()) / 3,
+  predefinedWidthFractions: [0.4, 0.6],
+  makeAlign: PdfKitExtended.alignTwoColumnsToExtremes(),
+  prepareCell: PdfKitExtended.makeEvenColumnsBold("Courier", "Courier-Bold", {
+    cellHasStroke: true,
+    cellStrokeColor: "aquamarine",
+  }),
+  prepareRow: PdfKitExtended.alternateMainColors("#d2d3d5", "#f3f3f3"),
+  hasHorizontalLines: false,
 });
 ```

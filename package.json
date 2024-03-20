@@ -3,6 +3,19 @@
   "version": "0.1.11",
   "type": "module",
   "description": "Some additional features built on top of PdfKit",
+  "keywords": [
+    "pdf",
+    "pdf writer",
+    "pdf generator",
+    "graphics",
+    "document",
+    "vector",
+    "table"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valeiras/pdf-kit-extended"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
